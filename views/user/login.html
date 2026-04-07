@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>User Login</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+font-family:Poppins;
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+background: linear-gradient(120deg,#ffffff,#f1fff5);
+
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+
+}
+
+.login-box{
+
+background:white;
+
+padding:35px;
+
+width:340px;
+
+border-radius:14px;
+
+box-shadow:0 12px 30px rgba(0,0,0,0.08);
+
+border:1px solid #eef2f1;
+
+}
+
+.logo{
+
+text-align:center;
+
+font-size:28px;
+
+font-weight:700;
+
+color:#0c831f;
+
+margin-bottom:5px;
+
+}
+
+h2{
+
+text-align:center;
+
+margin-bottom:20px;
+
+font-weight:600;
+
+}
+
+input{
+
+width:100%;
+
+padding:12px;
+
+margin:8px 0;
+
+border-radius:8px;
+
+border:1px solid #e0e0e0;
+
+font-size:14px;
+
+}
+
+input:focus{
+
+outline:none;
+
+border:1px solid #0c831f;
+
+box-shadow:0 0 0 2px rgba(12,131,31,0.1);
+
+}
+
+button{
+
+width:100%;
+
+padding:13px;
+
+background:#0c831f;
+
+color:white;
+
+border:none;
+
+border-radius:8px;
+
+cursor:pointer;
+
+margin-top:10px;
+
+font-weight:600;
+
+}
+
+button:hover{
+
+background:#096b18;
+
+}
+
+p{
+
+text-align:center;
+
+margin-top:15px;
+
+font-size:14px;
+
+}
+
+a{
+
+color:#0c831f;
+
+text-decoration:none;
+
+font-weight:500;
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="login-box">
+
+
+<div class="logo">
+FreshMart 🛒
+</div>
+
+
+<h2>Login to your account</h2>
+
+
+<input type="email" id="email" placeholder="Email">
+
+<input type="password" id="password" placeholder="Password">
+
+
+<button onclick="login()">
+Login
+</button>
+
+
+<p>
+
+New user?
+
+<a href="/views/user/register.html">
+Create account
+</a>
+
+</p>
+
+
+</div>
+
+
+
+<script>
+
+function login(){
+
+fetch("http://localhost:5000/api/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+email:document.getElementById("email").value,
+
+password:document.getElementById("password").value
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+
+if(data=="User not found" || data=="Incorrect password"){
+
+alert(data);
+
+return;
+
+}
+
+
+if(!data.id){
+
+alert("Login failed");
+
+return;
+
+}
+
+
+/* save user info */
+
+localStorage.setItem("userId", data.id);
+
+localStorage.setItem("userName", data.name);
+
+
+/* convert address object to readable format */
+
+let fullAddress =
+
+(data.address.building || "") + ", " +
+
+(data.address.street || "") + ", " +
+
+(data.address.landmark || "") + ", " +
+
+data.address.city + " - " +
+
+data.address.pincode;
+
+
+/* store address */
+
+localStorage.setItem("userAddress", fullAddress);
+
+
+/* success */
+
+alert("Login successful");
+
+
+window.location.href="/views/user/index.html";
+
+})
+
+.catch(err=>{
+
+alert("Error logging in");
+
+console.log(err);
+
+});
+
+}
+
+</script>
+
+
+</body>
+
+</html>

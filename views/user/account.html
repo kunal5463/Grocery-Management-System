@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My Account</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:Poppins;
+background:#f6f7fb;
+margin:0;
+}
+
+
+/* header */
+
+.header{
+background:#27ae60;
+color:white;
+padding:15px 40px;
+font-size:20px;
+font-weight:600;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+
+/* back button */
+
+.back-btn{
+background:white;
+color:#27ae60;
+padding:6px 12px;
+border-radius:6px;
+text-decoration:none;
+font-size:14px;
+}
+
+
+/* container */
+
+.container{
+padding:20px 40px;
+}
+
+
+/* card */
+
+.card{
+
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:12px;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+
+}
+
+
+/* title */
+
+.title{
+
+font-size:18px;
+margin-bottom:10px;
+font-weight:600;
+
+}
+
+
+/* order list */
+
+.order{
+
+padding:10px;
+border-bottom:1px solid #eee;
+font-size:14px;
+
+}
+
+
+.order:last-child{
+border-bottom:none;
+}
+
+
+/* items */
+
+.items{
+
+font-size:13px;
+color:gray;
+margin-top:5px;
+
+}
+
+
+/* button */
+
+button{
+
+background:#27ae60;
+color:white;
+border:none;
+padding:8px 15px;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<div class="header">
+
+My Account
+
+<a href="index.html" class="back-btn">
+
+← Back to Shop
+
+</a>
+
+</div>
+
+
+
+<div class="container">
+
+
+
+<!-- PROFILE -->
+
+<div class="card">
+
+<div class="title">
+
+Profile
+
+</div>
+
+<p id="userName"></p>
+
+</div>
+
+
+
+<!-- ADDRESS -->
+
+<div class="card">
+
+<div class="title">
+
+Saved Address
+
+</div>
+
+<p id="userAddress"></p>
+
+</div>
+
+
+
+<!-- ORDERS -->
+
+<div class="card">
+
+<div class="title">
+
+My Orders
+
+</div>
+
+<div id="orderList">
+
+Loading orders...
+
+</div>
+
+</div>
+
+
+
+<button onclick="logout()">
+
+Logout
+
+</button>
+
+
+
+</div>
+
+
+
+<script>
+
+
+
+/* check login */
+
+if(!localStorage.getItem("userId")){
+
+window.location.href="login.html";
+
+}
+
+
+
+/* show user details */
+
+document.getElementById("userName").innerText=
+
+localStorage.getItem("userName");
+
+
+
+document.getElementById("userAddress").innerText=
+
+localStorage.getItem("userAddress");
+
+
+
+/* load orders */
+
+let userId = localStorage.getItem("userId");
+
+fetch(`http://localhost:5000/api/orders/user/${userId}`)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+
+if(data.length==0){
+
+document.getElementById("orderList").innerHTML=
+"No orders yet";
+
+return;
+
+}
+
+
+let html="";
+
+
+data.forEach(order=>{
+
+
+let itemsHTML="";
+
+
+order.items.forEach(item=>{
+
+itemsHTML += `
+${item.name} x${item.qty} <br>
+`;
+
+});
+
+
+html+=`
+
+<div class="order">
+
+<b>Order #${order.id}</b>
+
+<br>
+
+${itemsHTML}
+
+<br>
+
+Total ₹${order.total}
+
+<br>
+
+Payment: ${order.payment}
+
+<br>
+
+Date:
+${new Date(order.time).toLocaleString()}
+
+</div>
+
+`;
+
+
+});
+
+
+document.getElementById("orderList").innerHTML=html;
+
+});
+
+
+
+
+
+/* logout */
+
+function logout(){
+
+localStorage.clear();
+
+window.location.href="login.html";
+
+}
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
